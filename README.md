@@ -25,3 +25,12 @@
 - README.md
 
 Затем GitHub → Settings → Pages → Deploy from a branch → main → /(root).
+
+
+## Автоматический вход после подтверждения email
+
+В Supabase открой **Authentication → URL Configuration** и добавь Redirect URL:
+
+`https://abdullokh252-byte.github.io/SKILLUP/`
+
+Эту же ссылку можно поставить как Site URL. После регистрации пользователь получает письмо. После нажатия ссылки подтверждения Supabase возвращает его на SKILLUP, а приложение автоматически открывает аккаунт — отдельно нажимать «Войти» не нужно.

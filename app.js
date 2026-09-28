@@ -15,6 +15,7 @@ let currentUser=null;
 let authMode='login';
 let cloudSaveTimer=null;
 let authReady=false;
+let handledAuthUserId=null;
 for(const k of Object.keys(lessons)){ if(!state.progress[k]||!Array.isArray(state.progress[k].completed)||!Array.isArray(state.progress[k].dates)) state.progress[k]={completed:[],dates:[]}; }
 function cloneDefault(){return JSON.parse(JSON.stringify(DEFAULT))}function load(){try{return {...cloneDefault(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return cloneDefault()}}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));updateGlobal();scheduleCloudSave()}
@@ -108,6 +109,10 @@ function authErrorMessage(error){
   if(text.includes('password'))return 'Проверь пароль: минимум 6 символов.';
   return error?.message||'Произошла ошибка. Попробуй ещё раз.';
 }
+function getAppRedirectUrl(){
+  return window.location.origin + window.location.pathname;
+}
+
 async function submitAuth(event){
   event.preventDefault();
   const email=document.getElementById('authEmail').value.trim();
@@ -119,12 +124,21 @@ async function submitAuth(event){
   showAuthMessage(authMode==='signup'?'Создаём аккаунт…':'Выполняем вход…');
   try{
     if(authMode==='signup'){
-      const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{name:name||'Ученик'}}});
+      const {data,error}=await supabaseClient.auth.signUp({
+        email,
+        password,
+        options:{
+          data:{name:name||'Ученик'},
+          emailRedirectTo:getAppRedirectUrl()
+        }
+      });
       if(error)throw error;
       if(data.session){
+        showApp();
+        await loadCloudState(data.session.user);
         toast('Аккаунт создан 🎉');
       }else{
-        showAuthMessage('Аккаунт создан. Проверь почту и нажми ссылку подтверждения, затем войди.','success');
+        showAuthMessage('Аккаунт создан. Проверь почту и нажми ссылку подтверждения — после этого SKILLUP откроется автоматически.','success');
       }
     }else{
       const {error}=await supabaseClient.auth.signInWithPassword({email,password});
@@ -133,22 +147,42 @@ async function submitAuth(event){
   }catch(error){showAuthMessage(authErrorMessage(error),'error')}
   finally{button.disabled=false}
 }
-async function signOut(){
-  await supabaseClient.auth.signOut();
+
+async function handleAuthSession(session){
+  if(session?.user){
+    currentUser=session.user;
+    showApp();
+    if(handledAuthUserId!==session.user.id || !authReady){
+      handledAuthUserId=session.user.id;
+      await loadCloudState(session.user);
+    }
+  }else{
+    currentUser=null;
+    authReady=false;
+    handledAuthUserId=null;
+    showAuth();
+    setAuthMode('login');
+  }
 }
+
 async function initAuth(){
   if(!supabaseClient){showAuth();showAuthMessage('Не удалось загрузить библиотеку авторизации.','error');return}
   setAuthMode('login');
   document.getElementById('loginTab').onclick=()=>setAuthMode('login');
   document.getElementById('signupTab').onclick=()=>setAuthMode('signup');
   document.getElementById('authForm').onsubmit=submitAuth;
-  const {data}=await supabaseClient.auth.getSession();
-  if(data.session){showApp();await loadCloudState(data.session.user)}else{showAuth()}
+
   supabaseClient.auth.onAuthStateChange((_event,session)=>{
-    setTimeout(async()=>{
-      if(session){showApp();await loadCloudState(session.user)}else{currentUser=null;authReady=false;showAuth();setAuthMode('login')}
-    },0)
+    setTimeout(()=>handleAuthSession(session),0);
   });
+
+  const {data,error}=await supabaseClient.auth.getSession();
+  if(error){
+    showAuth();
+    showAuthMessage('Не удалось восстановить сессию. Попробуй войти ещё раз.','error');
+    return;
+  }
+  await handleAuthSession(data.session);
 }
 
 function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
