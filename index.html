@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#8b5cf6">
+  <meta name="description" content="SKILLUP — приложение для развития навыков за 30 дней">
+  <title>SKILLUP — 30 дней развития</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand" data-route="home"><span class="brand-mark">S</span><span>SKILL<span class="accent">UP</span></span></div>
+    <nav class="nav">
+      <button class="nav-item active" data-route="home"><span>⌂</span>Главная</button>
+      <button class="nav-item" data-route="learn"><span>◫</span>Обучение</button>
+      <button class="nav-item" data-route="achievements"><span>★</span>Достижения</button>
+      <button class="nav-item" data-route="profile"><span>◉</span>Профиль</button>
+      <button class="nav-item" data-route="settings"><span>⚙</span>Настройки</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="streak-mini"><div class="streak-icon">🔥</div><div><div class="muted">Серия</div><strong id="sidebarStreak">0 дней</strong></div></div>
+    </div>
+  </aside>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <button class="mobile-menu" id="mobileMenuBtn">☰</button>
+      <span class="muted" id="routeLabel">Главная</span>
+      <div class="avatar" id="headerAvatar">A</div>
+    </header>
+
+    <section id="view-home" class="view active"></section>
+    <section id="view-learn" class="view"></section>
+    <section id="view-lesson" class="view"></section>
+    <section id="view-achievements" class="view"></section>
+    <section id="view-profile" class="view"></section>
+    <section id="view-settings" class="view"></section>
+  </main>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <script src="app.js"></script>
+</body>
+</html>

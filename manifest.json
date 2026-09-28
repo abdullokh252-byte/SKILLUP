@@ -1,0 +1,9 @@
+{
+  "name": "SKILLUP — 30 дней развития",
+  "short_name": "SKILLUP",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#08080c",
+  "theme_color": "#8b5cf6",
+  "description": "Персональное приложение для развития навыков за 30 дней."
+}
