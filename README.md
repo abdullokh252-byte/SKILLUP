@@ -1,20 +1,27 @@
-# SKILLUP
+# SKILLUP — Auth + Cloud
 
-Полноценная front-end версия приложения для обучения навыкам за 30 дней.
+Готовая статическая версия для GitHub Pages с Supabase Auth и облачным сохранением прогресса.
 
-Возможности:
-- Главная панель
-- 4 курса: English, Programming, Design, Marketing
-- 30 уроков на каждый курс
-- Сохранение прогресса в localStorage
-- Серия дней
-- Статистика и рейтинг
-- Достижения
-- Профиль
-- Настройки имени и темы
-- Адаптация под телефон
-- PWA/service worker
+## 1. Supabase
 
-Запуск:
-1. Открой `index.html` в браузере.
-2. Для PWA/service worker лучше запустить локальный сервер: `python -m http.server 8000`.
+Открой Supabase → SQL Editor и запусти `supabase_schema.sql`.
+
+В коде уже указан publishable key. Secret key сюда не добавляется.
+
+## 2. Email confirmation
+
+Если в Supabase включено подтверждение email, после регистрации пользователь должен подтвердить почту и затем войти.
+
+## 3. GitHub Pages
+
+Загрузи файлы из этой папки в корень репозитория:
+
+- index.html
+- app.js
+- styles.css
+- manifest.json
+- sw.js
+- supabase_schema.sql
+- README.md
+
+Затем GitHub → Settings → Pages → Deploy from a branch → main → /(root).
